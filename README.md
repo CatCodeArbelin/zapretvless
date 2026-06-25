@@ -67,3 +67,36 @@ The startup script starts the Windows Service only when it is already installed.
 ### WPF project not buildable inside Linux container
 
 The WPF desktop client is a Windows application and may not build inside a Linux Docker container. This is expected. Use Docker Compose only for check mode, and build/run the real WPF client on Windows with `.\up.ps1` or `.\scripts\dev-up.ps1`.
+
+## PR plan
+
+### PR-01: Bootstrap solution
+
+PR-01 establishes the baseline development and startup workflow for the repository. It must provide a single clear Windows entry point for local development, a Docker Compose check mode for safe container-friendly validation, and documentation that explains when to use each startup path.
+
+#### Required files and documentation
+
+- `docker-compose.yml`
+- `up.ps1`
+- `scripts/dev-up.ps1`
+- `scripts/dev-check.ps1`
+- README `One-command startup` section
+
+#### Acceptance criteria
+
+- `.\up.ps1` runs build/test checks and opens the UI.
+- `docker compose up --build` runs safe checks only.
+- Windows developer startup works without Docker.
+- Missing engine binaries produce warnings but do not crash the app.
+
+### PR-01.5: Dev startup polish
+
+PR-01.5 improves the developer experience around the bootstrap workflow after PR-01 lands. It focuses on making startup output understandable for beginners, validating local prerequisites early, and preventing surprising system-level behavior during development.
+
+#### Acceptance criteria
+
+- Startup output is clear and beginner-friendly.
+- Startup scripts include an admin mode check.
+- Startup scripts check for required engine binaries.
+- Startup scripts avoid silent failures.
+- Startup scripts do not automatically start network mode.
