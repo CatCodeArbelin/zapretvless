@@ -1,0 +1,10 @@
+<Window x:Class="Arbelin.One.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Arbelin One" Height="450" Width="800">
+    <Grid>
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="Arbelin One bootstrap" />
+    </Grid>
+</Window>
