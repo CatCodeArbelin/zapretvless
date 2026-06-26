@@ -1,0 +1,29 @@
+{
+  "schema": "example.bootstrap.v1",
+  "description": "Safe placeholder bootstrap configuration. Replace all example values outside the repository before use.",
+  "engines": {
+    "xray": {
+      "enabled": false,
+      "binaryPath": "./engines/xray/xray-placeholder",
+      "configPath": "./runtime/xray/config.generated.json"
+    },
+    "zapret": {
+      "enabled": false,
+      "binaryPath": "./engines/zapret/zapret-placeholder",
+      "configPath": "./runtime/zapret/config.generated.json"
+    }
+  },
+  "bootstrap": {
+    "server": "example.invalid",
+    "port": 0,
+    "transport": "placeholder",
+    "credentials": {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "publicKey": "placeholder-public-key"
+    }
+  },
+  "notes": [
+    "This file intentionally contains no real servers, keys, VLESS URIs, engine binaries, or runtime configs.",
+    "Copy this structure into a private deployment-specific configuration before use."
+  ]
+}
