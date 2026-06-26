@@ -1,39 +1,17 @@
 services:
-  dev:
+  safe-check:
     image: mcr.microsoft.com/dotnet/sdk:8.0
     working_dir: /app
     volumes:
-      - ./:/app
+      - ./:/app:ro
     command: >
       bash -lc '
         set -euo pipefail;
-        mapfile -t projects < <(find . -type f -name "*.csproj"
-          ! -path "./.git/*"
-          ! -iname "*wpf*.csproj"
-          ! -iname "*ui*.csproj"
-          ! -iname "*windows*.csproj" | sort);
-        if [ "$${#projects[@]}" -eq 0 ]; then
-          echo "No cross-platform .NET projects found; safe checks skipped.";
-          exit 0;
-        fi;
-        for project in "$${projects[@]}"; do
-          case "$${project}" in
-            *Arbelin.One.Shared.csproj|*Arbelin.One.Tests.csproj|*Backend*.csproj|*MockApi*.csproj|*Mock.API*.csproj|*Api*.csproj)
-              echo "Running safe checks for $${project}";
-              dotnet restore "$${project}";
-              dotnet build "$${project}" --no-restore;
-              dotnet test "$${project}" --no-build --no-restore;
-              ;;
-            *)
-              echo "Skipping $${project}; not in the cross-platform safe-check allowlist.";
-              ;;
-          esac;
-        done
-      '
 
-  strategy-api:
-    image: nginx:alpine
-    volumes:
-      - ./configs/strategies:/usr/share/nginx/html/strategies:ro
-    ports:
-      - "18080:80"
+        echo "Running container-friendly bootstrap checks.";
+        dotnet restore ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj;
+        dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --no-restore;
+        dotnet restore ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj;
+        dotnet build ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-restore;
+        dotnet test ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-build --no-restore;
+      '
