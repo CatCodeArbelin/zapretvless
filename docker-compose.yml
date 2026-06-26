@@ -5,13 +5,12 @@ services:
     volumes:
       - ./:/app:ro
     command: >
-      bash -lc '
-        set -euo pipefail;
-
-        echo "Running container-friendly bootstrap checks.";
-        dotnet restore ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj;
-        dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --no-restore;
-        dotnet restore ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj;
-        dotnet build ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-restore;
-        dotnet test ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-build --no-restore;
-      '
+      bash -lc "
+      set -euo pipefail;
+      echo 'Running container-friendly bootstrap checks';
+      dotnet restore ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj;
+      dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --no-restore;
+      dotnet restore ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj;
+      dotnet build ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-restore;
+      dotnet test ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-build --no-restore;
+      "

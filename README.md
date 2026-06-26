@@ -1,43 +1,58 @@
 # Arbelin One
 
-Arbelin One is a bootstrap Windows client solution. PR-01 focuses on creating a safe development baseline: solution structure, restore/build/test scripts, and documentation for local checks. It does **not** start network engines or enable a real DPI/VLESS runtime.
+## Статус
 
-## What PR-01 creates
+PR-01 — это только bootstrap проекта Arbelin One. Репозиторий содержит базовую структуру solution, безопасные скрипты проверки, документацию и пустые каталоги для будущих компонентов.
 
-PR-01 establishes the first repository baseline for the Windows client:
+В PR-01.2 нормализованы форматирование и проверки bootstrap. Новая runtime-функциональность не добавлялась.
 
-- `zapretvless.sln` with client, service, shared, and test projects.
-- `up.ps1` as the repository-root Windows entry point for bootstrap validation.
-- `scripts/dev-up.ps1` for the safe PR-01 bootstrap flow.
-- `scripts/dev-check.ps1` for restore/build/test validation without launching runtime components.
-- Docker Compose check mode for container-friendly validation paths.
+## Что создано в PR-01
 
-## How to build the solution
+- `zapretvless.sln` — .NET solution для client, service, shared и tests проектов.
+- `src/Arbelin.One.Client` — заготовка Windows UI-проекта.
+- `src/Arbelin.One.Service` — заготовка service-проекта без установки и запуска Windows Service.
+- `src/Arbelin.One.Shared` — shared-модели bootstrap.
+- `src/Arbelin.One.Tests` — базовые тесты bootstrap.
+- `up.ps1` — корневой entry point для локального safe bootstrap запуска.
+- `scripts/dev-up.ps1` — restore/build/test и попытка запуска client UI на Windows.
+- `scripts/dev-check.ps1` — restore/build/test без запуска UI и runtime-компонентов.
+- `docker-compose.yml` — container-friendly safe-check service.
+- `docs/`, `LICENSES/`, `configs/`, `engines/` — стартовая структура документации, конфигурации и будущих engine artifacts.
 
-From the repository root, build the solution with the .NET SDK:
+## Быстрый запуск на Windows
 
-```powershell
-dotnet restore .\zapretvless.sln
-dotnet build .\zapretvless.sln --configuration Release
-```
-
-On Windows, you can also run the bootstrap entry point:
+Из корня репозитория:
 
 ```powershell
 .\up.ps1
 ```
 
-`up.ps1` delegates to `scripts/dev-up.ps1`, which restores, builds, and tests the solution as a safe bootstrap check.
-
-## How to run checks
-
-Run the local PowerShell checks from the repository root:
+Или напрямую:
 
 ```powershell
-.\scripts\dev-check.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-up.ps1
 ```
 
-The same checks can be run manually with the .NET CLI:
+`dev-up.ps1` выполняет только следующие команды:
+
+```powershell
+dotnet restore .\zapretvless.sln
+dotnet build .\zapretvless.sln --configuration Release
+dotnet test .\zapretvless.sln --configuration Release
+dotnet run --project .\src\Arbelin.One.Client\Arbelin.One.Client.csproj
+```
+
+Если текущая среда не поддерживает запуск Windows UI, это является ограничением среды. Скрипт не должен обходить его сетевой логикой или запуском engine-компонентов.
+
+## Safe check
+
+Для проверки без запуска UI используйте:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\dev-check.ps1
+```
+
+`dev-check.ps1` выполняет только:
 
 ```powershell
 dotnet restore .\zapretvless.sln
@@ -45,18 +60,44 @@ dotnet build .\zapretvless.sln --configuration Release
 dotnet test .\zapretvless.sln --configuration Release
 ```
 
-Docker Compose is available only for safe check/build workflows:
+## Docker Compose check mode
 
-```bash
-docker compose up --build
+Docker Compose используется только для безопасной container-friendly проверки shared/tests проектов:
+
+```powershell
+docker compose config
+docker compose run --rm safe-check
 ```
 
-## PR-01 network/runtime safety
+Compose-файл не запускает Windows UI, Windows Service, Xray, Zapret или WinDivert, не публикует порты, не включает privileged mode и не меняет сеть хоста.
 
-PR-01 intentionally does not start network engines. The bootstrap scripts do not install or start a Windows Service, do not launch zapret/xray/WinDivert, and do not modify DNS, proxy, routing, or traffic interception settings.
+## Runtime safety
 
-Engine binaries are not required to run PR-01 checks. Any real DPI/VLESS runtime integration is outside the PR-01 bootstrap scope.
+В PR-01 и PR-01.2 не реализованы и не запускаются runtime-компоненты:
 
-## Next step
+- VLESS/DPI логика не реализована.
+- Xray не запускается.
+- Zapret не запускается.
+- WinDivert не запускается.
+- DNS, proxy и routes не меняются.
+- Windows Service не устанавливается и не запускается.
+- TUN mode, kill switch, hybrid logic, installer, auto-update и telemetry отсутствуют.
 
-PR-02 UI Skeleton is planned separately after PR-01 is merged.
+## Engine binaries
+
+Каталоги `engines/xray` и `engines/zapret` являются placeholders для будущих PR.
+
+Engine binaries не требуются для PR-01 checks и PR-01.2 checks. Отсутствие `xray.exe`, `winws.exe` или WinDivert binaries не является ошибкой bootstrap-проверок.
+
+## Что не реализовано
+
+- PR-02 UI Skeleton не делался.
+- VLESS parser не реализован.
+- Xray config generator не реализован.
+- ProcessSupervisor, XrayEngine и ZapretEngine не реализованы.
+- Управление DNS/proxy/routes не реализовано.
+- Любая DPI/VLESS runtime-логика не реализована.
+
+## Следующий шаг
+
+После merge PR-01.2 можно переходить к PR-02 UI Skeleton.
