@@ -1,59 +1,31 @@
-<#
-.SYNOPSIS
-    Runs safe PR-01 bootstrap checks and then starts the client project.
-
-.NOTES
-    This script does not start Windows Service, Xray, Zapret, WinDivert,
-    and does not change DNS, proxy, routes, or host networking.
-#>
-
 [CmdletBinding()]
 param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-function Write-Section {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Message
-    )
-
-    Write-Host "`n==> $Message" -ForegroundColor Cyan
-}
-
-function Invoke-Step {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Description,
-
-        [Parameter(Mandatory = $true)]
-        [scriptblock]$Command
-    )
-
-    Write-Section $Description
-    & $Command
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "$Description failed with exit code $LASTEXITCODE."
-        exit $LASTEXITCODE
-    }
-}
-
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-Write-Section 'Safety notice'
-Write-Host 'Safe bootstrap only: restore, build, test, and run the client project.' -ForegroundColor Yellow
-Write-Host 'No engines, Windows Service install/start, DNS, proxy, routes, or WinDivert actions are performed.' -ForegroundColor Yellow
-
-Write-Section 'Checking prerequisites'
-if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Error 'The .NET SDK command "dotnet" was not found. Install the .NET SDK and ensure dotnet is on PATH.'
+if (-not $IsWindows) {
+    Write-Error 'dev-up.ps1 is intended for local Windows development startup.'
     exit 1
 }
 
-Invoke-Step 'Restoring solution' { dotnet restore .\zapretvless.sln }
-Invoke-Step 'Building solution' { dotnet build .\zapretvless.sln --configuration Release }
-Invoke-Step 'Testing solution' { dotnet test .\zapretvless.sln --configuration Release }
-Invoke-Step 'Starting client project' { dotnet run --project .\src\Arbelin.One.Client\Arbelin.One.Client.csproj }
+if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+    Write-Error 'dotnet is required for PR-01 local startup.'
+    exit 1
+}
+
+dotnet restore .\zapretvless.sln
+dotnet build .\zapretvless.sln --configuration Release
+dotnet test .\zapretvless.sln --configuration Release
+
+$appDataRoot = Join-Path $env:LOCALAPPDATA 'ArbelinOne'
+New-Item -ItemType Directory -Force -Path $appDataRoot | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $appDataRoot 'logs') | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $appDataRoot 'configs') | Out-Null
+
+Write-Host 'PR-01 bootstrap mode: Xray, Zapret, WinDivert, DNS, proxy and routes are not touched.' -ForegroundColor Yellow
+
+dotnet run --project .\src\Arbelin.One.Client\Arbelin.One.Client.csproj

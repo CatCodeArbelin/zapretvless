@@ -1,13 +1,19 @@
 using System.Windows;
-using Arbelin.One.Shared;
 
 namespace Arbelin.One.Client;
 
 public partial class MainWindow : Window
 {
+    private const string BootstrapOnlyMessage = "PR-01 bootstrap only. Runtime logic is not implemented yet.";
+
     public MainWindow()
     {
         InitializeComponent();
-        Title = AppInfo.ProductName;
+    }
+
+    private void OnBootstrapOnlyClick(object sender, RoutedEventArgs e)
+    {
+        BootstrapNotice.Text = BootstrapOnlyMessage;
+        MessageBox.Show(BootstrapOnlyMessage, "Arbelin One", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 }

@@ -2,57 +2,32 @@
 
 ## Статус
 
-PR-01 — это только bootstrap проекта Arbelin One. Репозиторий содержит базовую структуру solution, безопасные скрипты проверки, документацию и пустые каталоги для будущих компонентов.
-
-В PR-01.2 нормализованы форматирование и проверки bootstrap. Новая runtime-функциональность не добавлялась.
+PR-01 — только bootstrap Windows-клиента Arbelin One / zapretvless. Runtime-логика не реализована и не запускается.
 
 ## Что создано в PR-01
 
-- `zapretvless.sln` — .NET solution для client, service, shared и tests проектов.
-- `src/Arbelin.One.Client` — заготовка Windows UI-проекта.
-- `src/Arbelin.One.Service` — заготовка service-проекта без установки и запуска Windows Service.
-- `src/Arbelin.One.Shared` — shared-модели bootstrap.
-- `src/Arbelin.One.Tests` — базовые тесты bootstrap.
-- `up.ps1` — корневой entry point для локального safe bootstrap запуска.
-- `scripts/dev-up.ps1` — restore/build/test и попытка запуска client UI на Windows.
-- `scripts/dev-check.ps1` — restore/build/test без запуска UI и runtime-компонентов.
-- `docker-compose.yml` — container-friendly safe-check service.
-- `docs/`, `LICENSES/`, `configs/`, `engines/` — стартовая структура документации, конфигурации и будущих engine artifacts.
+- `.NET 8` solution `zapretvless.sln`.
+- WPF desktop client `src/Arbelin.One.Client`.
+- Worker Service skeleton `src/Arbelin.One.Service`.
+- Shared library `src/Arbelin.One.Shared` с bootstrap-моделями.
+- xUnit tests `src/Arbelin.One.Tests`.
+- Безопасные PowerShell-скрипты, docs, configs placeholders и engine placeholders.
 
 ## Быстрый запуск на Windows
-
-Из корня репозитория:
 
 ```powershell
 .\up.ps1
 ```
 
-Или напрямую:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\dev-up.ps1
-```
-
-`dev-up.ps1` выполняет только следующие команды:
-
-```powershell
-dotnet restore .\zapretvless.sln
-dotnet build .\zapretvless.sln --configuration Release
-dotnet test .\zapretvless.sln --configuration Release
-dotnet run --project .\src\Arbelin.One.Client\Arbelin.One.Client.csproj
-```
-
-Если текущая среда не поддерживает запуск Windows UI, это является ограничением среды. Скрипт не должен обходить его сетевой логикой или запуском engine-компонентов.
+Скрипт выполняет restore/build/test, создаёт локальные папки `%LOCALAPPDATA%\ArbelinOne`, `%LOCALAPPDATA%\ArbelinOne\logs`, `%LOCALAPPDATA%\ArbelinOne\configs` и запускает WPF UI.
 
 ## Safe check
 
-Для проверки без запуска UI используйте:
-
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\dev-check.ps1
+.\scripts\dev-check.ps1
 ```
 
-`dev-check.ps1` выполняет только:
+Safe check выполняет только:
 
 ```powershell
 dotnet restore .\zapretvless.sln
@@ -62,42 +37,28 @@ dotnet test .\zapretvless.sln --configuration Release
 
 ## Docker Compose check mode
 
-Docker Compose используется только для безопасной container-friendly проверки shared/tests проектов:
-
 ```powershell
-docker compose config
-docker compose run --rm safe-check
+docker compose up --build
 ```
 
-Compose-файл не запускает Windows UI, Windows Service, Xray, Zapret или WinDivert, не публикует порты, не включает privileged mode и не меняет сеть хоста.
+Docker Compose не запускает Windows UI, Windows Service, Xray, Zapret или WinDivert, не публикует порты, не использует host network и не меняет DNS/proxy/routes.
 
 ## Runtime safety
 
-В PR-01 и PR-01.2 не реализованы и не запускаются runtime-компоненты:
-
-- VLESS/DPI логика не реализована.
-- Xray не запускается.
-- Zapret не запускается.
-- WinDivert не запускается.
-- DNS, proxy и routes не меняются.
-- Windows Service не устанавливается и не запускается.
-- TUN mode, kill switch, hybrid logic, installer, auto-update и telemetry отсутствуют.
+В PR-01 Xray/Zapret/WinDivert не запускаются. DNS, proxy и routes не меняются. Windows Service не устанавливается автоматически.
 
 ## Engine binaries
 
-Каталоги `engines/xray` и `engines/zapret` являются placeholders для будущих PR.
-
-Engine binaries не требуются для PR-01 checks и PR-01.2 checks. Отсутствие `xray.exe`, `winws.exe` или WinDivert binaries не является ошибкой bootstrap-проверок.
+Engine binaries не нужны для PR-01 checks. `xray.exe`, `winws.exe`, `winws2.exe`, `WinDivert64.sys` и другие binaries не включены.
 
 ## Что не реализовано
 
-- PR-02 UI Skeleton не делался.
 - VLESS parser не реализован.
-- Xray config generator не реализован.
-- ProcessSupervisor, XrayEngine и ZapretEngine не реализованы.
-- Управление DNS/proxy/routes не реализовано.
-- Любая DPI/VLESS runtime-логика не реализована.
+- XrayEngine не реализован.
+- ZapretEngine не реализован.
+- Xray config generator, ProcessSupervisor, TUN, kill switch, Hybrid logic, installer, auto-update и telemetry не реализованы.
+- PR-02 UI Skeleton не делался.
 
 ## Следующий шаг
 
-После merge PR-01.2 можно переходить к PR-02 UI Skeleton.
+Человек вручную смотрит diff, создаёт PR и делает merge. PR и merge не выполняются автоматикой bootstrap-задачи.

@@ -7,10 +7,9 @@ services:
     command: >
       bash -lc "
       set -euo pipefail;
-      echo 'Running container-friendly bootstrap checks';
       dotnet restore ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj;
-      dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --no-restore;
+      dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --configuration Release --no-restore;
       dotnet restore ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj;
-      dotnet build ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-restore;
-      dotnet test ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --no-build --no-restore;
+      dotnet build ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --configuration Release --no-restore;
+      dotnet test ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj --configuration Release --no-build --no-restore;
       "
