@@ -1,45 +1,38 @@
 using Arbelin.One.Shared.Models;
+using Xunit;
 
 namespace Arbelin.One.Tests;
 
 public sealed class BootstrapTests
 {
     [Fact]
-    public void AppInfo_can_be_created()
+    public void AppInfo_CanBeCreated()
     {
-        var appInfo = new AppInfo("Arbelin One", "0.1.0", "PR-01 bootstrap");
+        AppInfo info = new("Arbelin One", "0.1.0", "bootstrap");
 
-        Assert.Equal("Arbelin One", appInfo.Name);
-        Assert.Equal("0.1.0", appInfo.Version);
-        Assert.Equal("PR-01 bootstrap", appInfo.Stage);
+        Assert.Equal("Arbelin One", info.Name);
+        Assert.Equal("0.1.0", info.Version);
+        Assert.Equal("bootstrap", info.Stage);
     }
 
     [Fact]
-    public void RuntimeMode_stopped_exists()
+    public void RuntimeMode_Stopped_HasExpectedValue()
     {
         Assert.Equal(0, (int)RuntimeMode.Stopped);
     }
 
     [Fact]
-    public void ServiceStatus_stores_values()
+    public void ServiceStatus_StoresValues()
     {
-        var status = new ServiceStatus("Arbelin.One.Service", true, false, "Bootstrap only");
+        ServiceStatus status = new(
+            Name: "Xray",
+            IsAvailable: false,
+            IsRunning: false,
+            Message: "not configured");
 
-        Assert.Equal("Arbelin.One.Service", status.Name);
-        Assert.True(status.IsAvailable);
+        Assert.Equal("Xray", status.Name);
+        Assert.False(status.IsAvailable);
         Assert.False(status.IsRunning);
-        Assert.Equal("Bootstrap only", status.Message);
-    }
-
-    [Fact]
-    public void Tests_do_not_require_engine_binaries()
-    {
-        Assert.True(true);
-    }
-
-    [Fact]
-    public void Tests_do_not_require_windows_service()
-    {
-        Assert.True(true);
+        Assert.Equal("not configured", status.Message);
     }
 }

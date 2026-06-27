@@ -1,35 +1,37 @@
-[CmdletBinding()]
 param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-Set-Location $repoRoot
+$solutionPath = Join-Path $repoRoot 'zapretvless.sln'
+$clientProject = Join-Path $repoRoot 'src/Arbelin.One.Client/Arbelin.One.Client.csproj'
 
-$isWindowsRuntime = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform(
-    [System.Runtime.InteropServices.OSPlatform]::Windows
-)
-
-if (-not $isWindowsRuntime) {
-    Write-Error 'dev-up.ps1 is intended for local Windows development startup.'
-    exit 1
+if (-not $IsWindows) {
+    throw 'dev-up.ps1 must be run on Windows because the client is a WPF application.'
 }
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Error 'dotnet is required for PR-01 local startup.'
-    exit 1
+    throw 'dotnet SDK was not found. Install .NET 8 SDK first.'
 }
 
-dotnet restore .\zapretvless.sln
-dotnet build .\zapretvless.sln --configuration Release
-dotnet test .\zapretvless.sln --configuration Release
+if (-not (Test-Path $solutionPath)) {
+    throw "Solution file not found: $solutionPath"
+}
 
-$appDataRoot = Join-Path $env:LOCALAPPDATA 'ArbelinOne'
-New-Item -ItemType Directory -Force -Path $appDataRoot | Out-Null
-New-Item -ItemType Directory -Force -Path (Join-Path $appDataRoot 'logs') | Out-Null
-New-Item -ItemType Directory -Force -Path (Join-Path $appDataRoot 'configs') | Out-Null
+$localAppData = [Environment]::GetFolderPath('LocalApplicationData')
+$appRoot = Join-Path $localAppData 'ArbelinOne'
+$logsDir = Join-Path $appRoot 'logs'
+$configsDir = Join-Path $appRoot 'configs'
 
-Write-Host 'PR-01 bootstrap mode: Xray, Zapret, WinDivert, DNS, proxy and routes are not touched.' -ForegroundColor Yellow
+New-Item -ItemType Directory -Force -Path $appRoot, $logsDir, $configsDir | Out-Null
 
-dotnet run --project .\src\Arbelin.One.Client\Arbelin.One.Client.csproj
+Write-Host 'PR-01 bootstrap mode: Xray, Zapret, WinDivert, DNS, proxy and routes are not touched.'
+Write-Host 'Running restore/build/test...'
+
+dotnet restore $solutionPath
+dotnet build $solutionPath --configuration Release
+dotnet test $solutionPath --configuration Release
+
+Write-Host 'Starting WPF client...'
+dotnet run --project $clientProject

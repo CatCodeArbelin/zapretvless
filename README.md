@@ -2,16 +2,18 @@
 
 ## Статус
 
-PR-01 — только bootstrap Windows-клиента Arbelin One / zapretvless. Runtime-логика не реализована и не запускается.
+PR-01 bootstrap. Реальная VLESS/DPI runtime-логика ещё не реализована.
 
 ## Что создано в PR-01
 
-- `.NET 8` solution `zapretvless.sln`.
-- WPF desktop client `src/Arbelin.One.Client`.
-- Worker Service skeleton `src/Arbelin.One.Service`.
-- Shared library `src/Arbelin.One.Shared` с bootstrap-моделями.
-- xUnit tests `src/Arbelin.One.Tests`.
-- Безопасные PowerShell-скрипты, docs, configs placeholders и engine placeholders.
+- .NET solution
+- WPF client
+- Worker Service skeleton
+- Shared library
+- xUnit tests
+- PowerShell startup scripts
+- Docker Compose safe-check mode
+- docs/configs/LICENSES/engines placeholders
 
 ## Быстрый запуск на Windows
 
@@ -19,20 +21,10 @@ PR-01 — только bootstrap Windows-клиента Arbelin One / zapretvles
 .\up.ps1
 ```
 
-Скрипт выполняет restore/build/test, создаёт локальные папки `%LOCALAPPDATA%\ArbelinOne`, `%LOCALAPPDATA%\ArbelinOne\logs`, `%LOCALAPPDATA%\ArbelinOne\configs` и запускает WPF UI.
-
 ## Safe check
 
 ```powershell
 .\scripts\dev-check.ps1
-```
-
-Safe check выполняет только:
-
-```powershell
-dotnet restore .\zapretvless.sln
-dotnet build .\zapretvless.sln --configuration Release
-dotnet test .\zapretvless.sln --configuration Release
 ```
 
 ## Docker Compose check mode
@@ -41,24 +33,31 @@ dotnet test .\zapretvless.sln --configuration Release
 docker compose up --build
 ```
 
-Docker Compose не запускает Windows UI, Windows Service, Xray, Zapret или WinDivert, не публикует порты, не использует host network и не меняет DNS/proxy/routes.
+Docker Compose не запускает Windows UI, Windows Service, Xray, Zapret или WinDivert.
 
 ## Runtime safety
 
-В PR-01 Xray/Zapret/WinDivert не запускаются. DNS, proxy и routes не меняются. Windows Service не устанавливается автоматически.
+PR-01 не запускает Xray/Zapret/WinDivert и не меняет DNS/proxy/routes.
 
 ## Engine binaries
 
-Engine binaries не нужны для PR-01 checks. `xray.exe`, `winws.exe`, `winws2.exe`, `WinDivert64.sys` и другие binaries не включены.
+Бинарники не входят в репозиторий:
+
+* engines/xray/xray.exe
+* engines/zapret/winws.exe
+* engines/zapret/winws2.exe
+* engines/zapret/WinDivert64.sys
 
 ## Что не реализовано
 
-- VLESS parser не реализован.
-- XrayEngine не реализован.
-- ZapretEngine не реализован.
-- Xray config generator, ProcessSupervisor, TUN, kill switch, Hybrid logic, installer, auto-update и telemetry не реализованы.
-- PR-02 UI Skeleton не делался.
+* VLESS parser
+* Xray config generator
+* Process supervisor
+* XrayEngine
+* ZapretEngine
+* Hybrid mode
+* DNS/proxy/routes changes
 
 ## Следующий шаг
 
-Человек вручную смотрит diff, создаёт PR и делает merge. PR и merge не выполняются автоматикой bootstrap-задачи.
+После успешного build/test и запуска `.\up.ps1` можно переходить к PR-02 UI Skeleton.

@@ -1,11 +1,16 @@
-[CmdletBinding()]
 param(
     [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$RemainingArguments
+    [string[]] $Arguments
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-& .\scripts\dev-up.ps1 @RemainingArguments
-exit $LASTEXITCODE
+$repoRoot = $PSScriptRoot
+$devUpScript = Join-Path $repoRoot 'scripts/dev-up.ps1'
+
+if (-not (Test-Path $devUpScript)) {
+    throw "Missing startup script: $devUpScript"
+}
+
+& $devUpScript @Arguments

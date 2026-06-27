@@ -1,13 +1,13 @@
 services:
   safe-check:
     image: mcr.microsoft.com/dotnet/sdk:8.0
-    working_dir: /work
+    working_dir: /app
     volumes:
       - ./:/app:ro
     command: >
       bash -lc "
       set -euo pipefail;
-      cp -a /app/. /work/;
+      echo 'Running safe container checks. WPF UI, Windows Service, Xray, Zapret and WinDivert are not started.';
       dotnet restore ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj;
       dotnet build ./src/Arbelin.One.Shared/Arbelin.One.Shared.csproj --configuration Release --no-restore;
       dotnet restore ./src/Arbelin.One.Tests/Arbelin.One.Tests.csproj;

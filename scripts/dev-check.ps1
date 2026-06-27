@@ -1,17 +1,21 @@
-[CmdletBinding()]
 param()
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-Set-Location $repoRoot
+$solutionPath = Join-Path $repoRoot 'zapretvless.sln'
 
 if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Error 'dotnet is required for PR-01 safe checks.'
-    exit 1
+    throw 'dotnet SDK was not found. Install .NET 8 SDK first.'
 }
 
-dotnet restore .\zapretvless.sln
-dotnet build .\zapretvless.sln --configuration Release
-dotnet test .\zapretvless.sln --configuration Release
+if (-not (Test-Path $solutionPath)) {
+    throw "Solution file not found: $solutionPath"
+}
+
+Write-Host 'PR-01 safe check: UI, service, engines and network runtime are not started.'
+
+dotnet restore $solutionPath
+dotnet build $solutionPath --configuration Release
+dotnet test $solutionPath --configuration Release
