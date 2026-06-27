@@ -1,39 +1,25 @@
 # Dev setup
 
-Ниже перечислены безопасные команды сборки и проверки для PR-01 bootstrap. Они предназначены для локальной валидации структуры решения и конфигурации без запуска сетевых движков или внешних runtime-binaries.
-
-## Проверка окружения
+## Windows bootstrap startup
 
 ```powershell
-dotnet --info
+.\up.ps1
 ```
 
-## Восстановление зависимостей
+Команда выполняет restore/build/test, создаёт локальные bootstrap-папки и запускает WPF UI.
+
+## Safe check без UI
 
 ```powershell
-dotnet restore zapretvless.sln
+.\scripts\dev-check.ps1
 ```
 
-## Сборка Release
+Команда выполняет только restore/build/test для solution.
+
+## Docker Compose check
 
 ```powershell
-dotnet build zapretvless.sln --configuration Release
+docker compose up --build
 ```
 
-## Тесты Release
-
-```powershell
-dotnet test zapretvless.sln --configuration Release
-```
-
-## Проектный dev-check
-
-```powershell
-pwsh -File scripts/dev-check.ps1
-```
-
-## Проверка Docker Compose конфигурации
-
-```powershell
-docker compose config
-```
+Compose-режим предназначен только для безопасной проверки shared/tests в .NET SDK контейнере.

@@ -1,10 +1,31 @@
 <Window x:Class="Arbelin.One.Client.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Arbelin One" Height="450" Width="800">
-    <Grid>
-        <TextBlock HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   Text="Arbelin One bootstrap" />
+        Title="Arbelin One"
+        MinWidth="900"
+        MinHeight="600"
+        Width="900"
+        Height="600">
+    <Grid Margin="32">
+        <StackPanel VerticalAlignment="Top">
+            <TextBlock Text="Arbelin One" FontSize="32" FontWeight="Bold" />
+            <TextBlock Text="Bootstrap ready" FontSize="18" Margin="0,8,0,24" />
+            <TextBlock Text="Mode: Stopped" />
+            <TextBlock Text="Xray: not configured" />
+            <TextBlock Text="Zapret: not configured" />
+            <TextBlock Text="WinDivert: not configured" />
+
+            <WrapPanel Margin="0,32,0,0">
+                <Button Content="Start VLESS" Click="OnBootstrapOnlyClick" Margin="0,0,12,12" Padding="18,8" />
+                <Button Content="Start DPI Bypass" Click="OnBootstrapOnlyClick" Margin="0,0,12,12" Padding="18,8" />
+                <Button Content="Start Hybrid" Click="OnBootstrapOnlyClick" Margin="0,0,12,12" Padding="18,8" />
+                <Button Content="Stop All" Click="OnBootstrapOnlyClick" Margin="0,0,12,12" Padding="18,8" />
+            </WrapPanel>
+
+            <TextBlock x:Name="BootstrapNotice"
+                       Text="PR-01 bootstrap only. Runtime logic is not implemented yet."
+                       Margin="0,24,0,0"
+                       Foreground="DarkSlateGray" />
+        </StackPanel>
     </Grid>
 </Window>
