@@ -7,7 +7,11 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
-if (-not $IsWindows) {
+$isWindowsRuntime = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform(
+    [System.Runtime.InteropServices.OSPlatform]::Windows
+)
+
+if (-not $isWindowsRuntime) {
     Write-Error 'dev-up.ps1 is intended for local Windows development startup.'
     exit 1
 }
